@@ -1,0 +1,18 @@
+sap.ui.define([
+    "$$TEMPLATE_INCLUDE_MOCKSERVER_BASIS$$"
+], function (MockServer) {
+    "use strict";
+    return MockServer.extend("$$TEMPLATE_SERVICE_NAME$$", {
+
+        constructor: function () {
+$$TEMPLATE_CALL_SUPER$$
+            this._oEntityConfiguration = $$TEMPLATE_ENTITY_CONFIGURATION$$;
+        },
+
+        _extendRequests: function () {
+            var aRequests = this.getMockServer().getRequests();
+$$TEMPLATE_OWN_REQUESTS$$
+            this.getMockServer().setRequests(aRequests);
+        }$$TEMPLATE_OWN_BASE_IMPLEMENTATIONS$$
+    });
+});

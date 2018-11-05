@@ -1,0 +1,680 @@
+sap.ui.define([
+    "sap/ui/base/Object",
+    "sap/ui/core/util/MockServer"
+], function (UI5Object, MockServer) {
+    "use strict";
+
+    var iCurrentNumberRange = 1000;
+
+    /**
+     * <H1>Mock-Server Configuration</H1>
+     * Reusable library class for Mockserver handling for QUnit and OPA tests.
+     * Utilizes sap.ui.model.MockServer library
+     *
+     * @constructor
+     * @param   {String}  sAppModulePath The application module path
+     * @param   {String}  sDataSourceName The data source name - look for it in the manifest.json->sap.app->dataSources (ex. "mainService")
+     * @param   [String]  sDataFolderName the folder name where the JSON Data is stored (if any). Default is localService/mockdata
+     * @param   [Integer] iResponseTime Default Response Time of every single request. Default Value is 10.
+     * @class
+     * @alias $$TEMPLATE_INCLUDE_MOCKSERVER_BASIS_DOT$$
+     */
+    var MockServerDefinition = /** @lends $$TEMPLATE_INCLUDE_MOCKSERVER_BASIS_DOT$$.prototype */ UI5Object.extend("$$TEMPLATE_INCLUDE_MOCKSERVER_BASIS$$", {
+        constructor: function (sAppModulePath, sDataSourceName, sDataFolderName, iResponseTime) {
+            // The application module path
+            this._sAppModulePath = sAppModulePath;
+            // The data source name - look for it in the manifest.json->sap.app->dataSources (ex. "mainService")
+            this._sDataSourceName = sDataSourceName;
+            //the folder name where the JSON Data is stored (if any)
+            this._sDataFolderName = sDataFolderName ? sDataFolderName : "localService/mockdata";
+            // Declare empty MockServer
+            this._oMockServer = null;
+            //Response Time (10 by default - speed up stuff - no need to wait forever)
+            this._iResponseTime = iResponseTime ? iResponseTime : 10;
+            //Array of entites which must be loaded (if empty, all)
+            this._aEntityRequired = [];
+            //enhancement configuration - to be filled by sub-classes
+            this._oEntityConfiguration = [];
+            this._oSourceConfiguration = [];
+            //currently active nav (from before mocking event)
+            this._sActiveNav = "";
+            //configuration of the next answer
+            this._aAnswerConfiguration = [];
+            this._sQueryparam = ""; // query of the ongoing request (GET)
+            this._oMockMode = ["POST", "GET", "PUT", "DELETE"];
+
+            MockServerDefinition.oActiveMockServer[sDataSourceName] = this;
+        },
+
+        //copy of protected mockserver coding
+        _handleUrlNormalization: function (aUrlParams) {
+            var aUrlParamsNormalized = [];
+
+            var fnStartsWith = function (sValue) {
+                var apostLocation = sValue.indexOf("'");
+                var doubleQuotesLocation = sValue.indexOf("\"");
+                if (apostLocation === -1 && doubleQuotesLocation === -1) {
+                    return null;
+                } else {
+                    if (apostLocation > -1 && doubleQuotesLocation === -1) {
+                        return "appost";
+                    }
+                    if (doubleQuotesLocation > -1 && apostLocation === -1) {
+                        return "doublequotes";
+                    }
+                    if (apostLocation > -1 && doubleQuotesLocation > -1 && apostLocation < doubleQuotesLocation) {
+                        return "appost";
+                    }
+                    if (apostLocation > -1 && doubleQuotesLocation > -1 && doubleQuotesLocation < apostLocation) {
+                        return "doublequotes";
+                    }
+                }
+
+            };
+
+            var fnAmpersandHandler = function (aParams, aParamsNorm, index, apostType) {
+                var stringAmpersand = aParams[index];
+                var j = index + 1;
+                while (j < aParams.length && aParams[j].indexOf(apostType) === -1) {
+                    stringAmpersand = stringAmpersand + "&" + aParams[j];
+                    j++;
+                }
+
+                stringAmpersand = stringAmpersand + "&" + aParams[j];
+
+                aParamsNorm.push(stringAmpersand);
+                index = j;
+                return index;
+            };
+
+            for (var i = 0; i < aUrlParams.length; i++) {
+                // there is no ' and no " in param values
+                if (!fnStartsWith(aUrlParams[i])) {
+                    aUrlParamsNormalized.push(aUrlParams[i]);
+                }
+                // there is ' in param value
+                if (fnStartsWith(aUrlParams[i]) === "appost") {
+                    var firstLocation = aUrlParams[i].indexOf("'");
+                    if (aUrlParams[i].indexOf("'", firstLocation + 1) === -1) {
+                        i = fnAmpersandHandler(aUrlParams, aUrlParamsNormalized, i, "'");
+                    } else {
+                        aUrlParamsNormalized.push(aUrlParams[i]);
+                    }
+                }
+                // there is " in param value
+                if (fnStartsWith(aUrlParams[i]) === "doublequotes") {
+                    var firstQuotesLocation = aUrlParams[i].indexOf("\"");
+                    if (aUrlParams[i].indexOf("\"", firstQuotesLocation + 1) === -1) {
+                        i = fnAmpersandHandler(aUrlParams, aUrlParamsNormalized, i, "\"");
+                    } else {
+                        aUrlParamsNormalized.push(aUrlParams[i]);
+                    }
+                }
+            }
+
+            return aUrlParamsNormalized;
+        },
+
+        _filterEntitySet: function (sEntitySetName, oFilteredData, sUrlParams) {
+            sUrlParams = sUrlParams || this._sQueryparam;
+            var aUrlParams = decodeURIComponent(sUrlParams).replace("?", "&").split("&");
+            aUrlParams = this._handleUrlNormalization(aUrlParams);
+            if (aUrlParams.length > 1) {
+                aUrlParams = this.getMockServer()._orderQueryOptions(aUrlParams);
+            }
+            $.each(aUrlParams, function (iIndex, sQuery) {
+                this.getMockServer()._applyQueryOnCollection(oFilteredData, sQuery, sEntitySetName);
+            }.bind(this));
+        },
+
+
+        /**
+         * Copy from mockserver (ui5) - reason for copyy: do NOT create these artifical entries which are hard to remove later on again
+         * @private
+         **/
+        _enhanceWithMetadata: function (oEntitySet, oMockData) {
+            if (oMockData) {
+                var sRootUri = this.getMockServer()._getRootUri(),
+                    sEntitySetName = oEntitySet && oEntitySet.name;
+                jQuery.each(oMockData, function (iIndex, oEntry) {
+                    oEntry.__metadata = oEntry.__metadata || {};
+                    // add the metadata for the entry
+                    oEntry.__metadata.id = sRootUri + sEntitySetName + "(" + this.getMockServer()._createKeysString(oEntitySet, oEntry) + ")";
+                    oEntry.__metadata.type = oEntitySet.schema + "." + oEntitySet.type;
+                    oEntry.__metadata.uri = sRootUri + sEntitySetName + "(" + this.getMockServer()._createKeysString(oEntitySet, oEntry) + ")";
+                    // add the navigation properties
+                    jQuery.each(oEntitySet.navprops, function (sKey, oNavProp) {
+                        if (oEntry[sKey] && !jQuery.isEmptyObject(oEntry[sKey]) && !oEntry[sKey]["__deferred"]) {
+                            var aTemp = [];
+                            if (oNavProp.to.multiplicity === "*") {
+                                aTemp = oEntry[sKey].results;
+                            } else {
+                                aTemp = [oEntry[sKey]];
+                            }
+                            this._enhanceWithMetadata(this.getMockServer()._mEntitySets[oNavProp.to.entitySet], aTemp);
+                        } else {
+                            oEntry[sKey] = {
+                                __deferred: {
+                                    uri: sRootUri + sEntitySetName + "(" + this.getMockServer()._createKeysString(oEntitySet, oEntry) + ")/" + sKey
+                                }
+                            };
+                        }
+                    }.bind(this));
+                }.bind(this));
+            }
+        },
+
+        _handleGlobalEventBefore: function (oXhr, oEntityConfig) {
+            if (oEntityConfig.syncWith) {
+                var oSyncWith = MockServerDefinition.get(oEntityConfig.syncWith.service);
+                if (oSyncWith) {
+                    this.getMockServer()._oMockdata[oEntityConfig.EntitySet] = oSyncWith.getMockServer()._oMockdata[oEntityConfig.syncWith.entitySet];
+                }
+            }
+        },
+
+        _handleGlobalEventAfter: function (oXhr, oEntity) {
+            $.each(this._aAnswerConfiguration, function (iIndex, oConfig) {
+                if ((oConfig.method instanceof RegExp && oConfig.method.test(oXhr.method) === false) ||
+                    (typeof oConfig.method === "string" && oConfig.method !== oXhr.method)) {
+                    return false;
+                }
+                if (oConfig.servicePath.test(oXhr.url) === false) {
+                    return true;
+                }
+
+                if (oConfig.answer) {
+                    $.each(oConfig.answer, function (sAttributeName, oAnswerAttribute) {
+                        oEntity[sAttributeName] = oAnswerAttribute;
+                    });
+                }
+                if (oConfig.answerCallback) {
+                    oConfig.answerCallback(oXhr, oEntity, this);
+                }
+                if (oConfig.oneTimeEvent) {
+                    this._aAnswerConfiguration.splice(iIndex, 1);
+                }
+                if (oConfig.error) {
+                    throw {
+                        error: {
+                            code: oConfig.error.code,
+                            message: oConfig.error.message
+                        }
+                    }
+                }
+                return false;
+            }.bind(this));
+        },
+
+        simulateAnswer: function (oConfig) {
+            var oConfiguration = {
+                oneTimeEvent: typeof oConfig.oneTimeEvent !== "undefined" ? oConfig.oneTimeEvent : true,
+                servicePath: typeof oConfig.servicePath !== "undefined" ? oConfig.servicePath : new RegExp(".*"),
+                method: typeof oConfig.method !== "undefined" ? oConfig.method : new RegExp(".*"),
+                answer: typeof oConfig.answer !== "undefined" ? oConfig.answer : null,
+                answerCallback: typeof oConfig.answerCallback !== "undefined" ? oConfig.answerCallback : null,
+                error: typeof oConfig.error !== "undefined" ? oConfig.error : null,
+            };
+            if (oConfiguration.error) {
+                oConfiguration.error = {
+                    code: typeof oConfiguration.error.code !== "undefined" ? oConfiguration.error.code : 400,
+                    message: typeof oConfiguration.error.messagee !== "undefined" ? oConfiguration.error.message : "Artifical Error Message from Mockserver"
+                }
+            }
+            this._aAnswerConfiguration.push(oConfiguration);
+        },
+
+        _enhanceConfiguration: function () {
+            //add dummy configuration to the config missing on our side..
+            $.each(this.getMockServer()._mEntitySets, function (sEntitySet, oEntitySet) {
+                if (!this._oEntityConfiguration[sEntitySet]) {
+                    this._oEntityConfiguration[sEntitySet] = {
+                        EntitySet: sEntitySet,
+                        NavContainer: {},
+                        Attributes: {}
+                    };
+                }
+                var oConfig = this._oEntityConfiguration[sEntitySet];
+                if (!oConfig.NavContainer) {
+                    oConfig.NavContainer = {};
+                }
+                if (!oConfig.Attributes) {
+                    oConfig.Attributes = {};
+                }
+                if (!oConfig.EntitySet) {
+                    oConfig.EntitySet = sEntitySet;
+                }
+                $.each(oEntitySet.navprops, function (iIndex, oNavProp) {
+                    if (!oConfig.NavContainer[oNavProp.name]) {
+                        oConfig.NavContainer[oNavProp.name] = {
+                            TargetEntitySet: oNavProp.to.entitySet
+                        };
+                    }
+                });
+            }.bind(this));
+        },
+
+        _detachEvents: function () {
+            $.each(this._oEntityConfiguration, function (sEntitySet, _oEntityConfiguration) {
+                $.each(this._oMockMode, function (iIndexMode, sMode) {
+                    this.getMockServer().detachEvent(sMode + sEntitySet + ":before", this._localEventBefore.bind(this));
+                    this.getMockServer().detachEvent(sMode + sEntitySet + ":after", this._localEventAfter.bind(this));
+                }.bind(this));
+            }.bind(this));
+        },
+
+        _attachEvents: function () {
+            this._enhanceConfiguration();
+            $.each(this._oEntityConfiguration, function (sEntitySet, _oEntityConfiguration) {
+                $.each(this._oMockMode, function (sIndex, sMode) {
+                    this.getMockServer().attachEvent(sMode + sEntitySet + ":before", this._localEventBefore.bind(this));
+                    this.getMockServer().attachEvent(sMode + sEntitySet + ":after", this._localEventAfter.bind(this));
+                }.bind(this));
+            }.bind(this))
+        },
+
+        _localEventBefore: function (oEvent) {
+            var oXhr = oEvent.getParameter("oXhr");
+            var sEntitySet = oEvent.getId();
+            sEntitySet = sEntitySet.substring(oXhr.method.length);
+            sEntitySet = sEntitySet.substring(0, sEntitySet.indexOf(":"));
+            var _oEntityConfiguration = this._oEntityConfiguration[sEntitySet];
+            if (!_oEntityConfiguration) {
+                return;
+            }
+            //1) call global event - afterwards the local one
+            this._handleGlobalEventBefore(oXhr, _oEntityConfiguration);
+
+            this._oActiveConfiguration = null;
+            this._oSourceConfiguration = null;
+            this._oSourceEntity = null;
+            this._sQueryparam = oEvent.getParameter("sUrlParams");
+
+            var sNav = oEvent.getParameter("sNavName");
+            var sKeys = oEvent.getParameter("sKeys");
+            if (sNav && sNav.length) {
+                if (typeof this._oEntityConfiguration[sEntitySet].NavContainer[sNav] == "undefined") {
+                    return;
+                }
+                this._oSourceEntity = this._getEntityFromKey(sEntitySet, sKeys);
+                if (this._oSourceEntity) {
+                    this._oSourceEntity = this._oSourceEntity.entry;
+                }
+                this._oSourceConfiguration = this._oEntityConfiguration[sEntitySet];
+                var sNavTarget = this._oEntityConfiguration[sEntitySet].NavContainer[sNav].TargetEntitySet;
+
+                if (typeof this._oEntityConfiguration[sNavTarget] == "undefined") {
+                    return;
+                }
+                this._oActiveConfiguration = this._oEntityConfiguration[sNavTarget];
+            } else {
+                this._oActiveConfiguration = _oEntityConfiguration;
+            }
+        },
+
+        _localEventAfter: function (oEvent) {
+            var oXhr = oEvent.getParameter("oXhr");
+            var sMode = oXhr.method;
+            var sEntitySet = oEvent.getId().substring(oXhr.method.length);
+            sEntitySet = sEntitySet.substring(0, sEntitySet.indexOf(":"));
+
+            var oEntity = oEvent.getParameter("oEntity") || oEvent.getParameter("oFilteredData") || oEvent.getParameter("oEntry");
+            //1) call global event - afterwards the local one
+            this._handleGlobalEventAfter(oXhr, oEntity);
+
+            var oConfig = oEvent.getParameter("oTargetConfiguration") || this._oActiveConfiguration;
+            var oSourceConfig = oEvent.getParameter("oSourceConfiguration") || this._oSourceConfiguration;
+            var oParentEntity = oEvent.getParameter("oParentEntity") || this._oSourceEntity;
+            if (!oConfig) {
+                return;
+            }
+
+            if (sMode === "POST" || sMode === "PUT") {
+                if (oParentEntity && oSourceConfig && oSourceConfig.NavContainer) {
+                    $.each(this.getMockServer()._mEntitySets[oSourceConfig.EntitySet].navprops, function (sNavIndex, oNavProps) {
+                        //check if that nav-index is correct..
+                        if (oSourceConfig.NavContainer[oNavProps.name] &&
+                            oSourceConfig.NavContainer[oNavProps.name].TargetEntitySet === oConfig.EntitySet) {
+                            //we are assuming both have the same amount of entries.. nothing elsse makes sense anyways
+                            for (var i = 0; i < oNavProps.from.propRef.length; i++) {
+                                oEntity[oNavProps.to.propRef[i]] = oParentEntity[oNavProps.from.propRef[i]];
+                            }
+                            return false;
+                        }
+                        return true;
+                    }.bind(this));
+                }
+
+                $.each(oConfig.Attributes, function (sAttribute, oAttributeProperties) {
+                    if (oAttributeProperties.IsNumberRange === true && oXhr.method === "POST" &&
+                        oXhr.requestHeaders["x-http-method"] !== "MERGE") { //in case of MERGE - do not get a numbmer
+                        oEntity[sAttribute] = iCurrentNumberRange + 1;
+                        iCurrentNumberRange = iCurrentNumberRange + 1;
+                    }
+
+                    if (oAttributeProperties.SourceValue && oAttributeProperties.SourceValue.enable === true &&
+                        oParentEntity && oParentEntity[oAttributeProperties.SourceValue.sourceAttribute]) {
+                        oEntity[sAttribute] = oParentEntity[oAttributeProperties.SourceValue.sourceAttribute];
+                    }
+                    if (oAttributeProperties.IsNumC === true) {
+                        if (isNaN(oEntity[sAttribute]) === true) {
+                            oEntity[sAttribute] = 0;
+                        }
+                        oEntity[sAttribute] = parseInt(oEntity[sAttribute], 10).toString();
+                        while (oEntity[sAttribute].length < 10) {
+                            oEntity[sAttribute] = "0" + oEntity[sAttribute];
+                        }
+                    }
+                }.bind(this));
+            }
+
+
+            if (oConfig.fnCallback) {
+                var sCallbackMode = oXhr.method;
+                if (sCallbackMode === "POST" && oXhr.requestHeaders["x-http-method"] === "MERGE") {
+                    sCallbackMode = "MERGE";
+                }
+
+                oConfig.fnCallback(sCallbackMode, oXhr, oEntity, this.getMockServer().getEntitySetData(this._oActiveConfiguration.EntitySet));
+            }
+
+            //attention for POST (create) - the mock server of sap is missing the feature to make a deep insert via navigation property
+            if (oXhr.method === 'POST' && oXhr.requestHeaders["x-http-method"] !== "MERGE") {
+                if (oConfig && oConfig) {
+                    var oData = JSON.parse(oXhr.requestBody);
+                    $.each(oConfig.NavContainer, function (sIndex, oNavContainer) {
+                        if (oData[oNavContainer.TargetEntitySet] && oData[oNavContainer.TargetEntitySet].length > 0) {
+                            oEntity[oNavContainer.TargetEntitySet] = oData[oNavContainer.TargetEntitySet];
+
+                            /*//foreward adding metadata - as enhanceWithMetadata is adding the entry before - we have to splice it before
+                            //fixed by making an own enhanceWithMeteadata function
+                            $.each(oEntity[oNavContainer.TargetEntitySet], function (iIndex, oDataEntry) {
+                                this.getMockServer()._oMockdata[oNavContainer.TargetEntitySet].splice(this.getMockServer()._oMockdata[oNavContainer.TargetEntitySet].length - 1, 1);
+                            }.bind(this));*/
+                            $.each(oEntity[oNavContainer.TargetEntitySet], function (iIndex, oDataEntry) {
+                                this.getMockServer().fireEvent('POST' + oNavContainer.TargetEntitySet + ":after", {
+                                    oXhr: oXhr,
+                                    oEntity: oDataEntry,
+                                    oParentEntity: oEntity,
+                                    oTargetConfiguration: this._oEntityConfiguration[oNavContainer.TargetEntitySet],
+                                    oSourceConfiguration: this._oActiveConfiguration
+                                });
+
+                                this.getMockServer().fireEvent("POST:after", {
+                                    oXhr: oXhr,
+                                    oEntity: oDataEntry
+                                });
+
+                                this.getMockServer()._oMockdata[oNavContainer.TargetEntitySet] = this.getMockServer()._oMockdata[oNavContainer.TargetEntitySet].concat([oDataEntry]);
+                            }.bind(this));
+
+                            //delete from the old data, otherwise the deep insert will make issues later on
+                            delete oEntity[oNavContainer.TargetEntitySet];
+                        }
+                    }.bind(this));
+                }
+            }
+
+            //we have to delete __metadata and recreate again, as we've most probably changed a primary key..
+            if (oXhr.method === "POST" || oXhr.method === "PUT") {
+                this._enhanceWithMetadata(this.getMockServer()._mEntitySets[oConfig.EntitySet], [oEntity]);
+            }
+        },
+
+        _getObject: function (sEntitySet, oData) {
+            var aMockData = this._oMockServer._oMockdata[sEntitySet]
+            if (!aMockData) {
+                return {};
+            }
+
+            var oFoundData = {};
+            $.each(aMockData, function (iIndex, oObject) {
+                var bFound = true;
+                $.each(oData, function (sAttribute, oValue) {
+                    if (oObject[sAttribute] !== oValue) {
+                        bFound = false;
+                    }
+                    return bFound;
+                });
+                if (bFound === true) {
+                    oFoundData = oObject;
+                    return false;
+                }
+                return true;
+            }.bind(this));
+
+            return oFoundData;
+        },
+
+
+        // helper to find the entity set entry for a given entity set name and the keys of the entry
+        _getEntityFromKey: function (sEntitySetName, sKeys) {
+            sKeys = decodeURIComponent(sKeys);
+            var oFoundEntry;
+            var oEntitySet = this.getMockServer()._mEntitySets[sEntitySetName];
+            var aKeys = oEntitySet.keys;
+            // split keys
+            var aRequestedKeys = sKeys.split(',');
+
+            // check number of keys to be equal to the entity keys and validates keys type for quotations
+            if (aRequestedKeys.length !== aKeys.length) {
+                this.getMockServer()._logAndThrowMockServerCustomError(400, this.getMockServer()._oErrorMessages.INVALID_KEY_PREDICATE_QUANTITY);
+            }
+            this.getMockServer()._isRequestedKeysValid(oEntitySet, aRequestedKeys);
+            if (aRequestedKeys.length === 1 && !aRequestedKeys[0].split('=')[1]) {
+                aRequestedKeys = [aKeys[0] + "=" + aRequestedKeys[0]];
+            }
+            $.each(this.getMockServer()._oMockdata[sEntitySetName], function (iIndex, oEntry) {
+                // check each key for existence and value
+                for (var i = 0; i < aRequestedKeys.length; i++) {
+                    var aKeyVal = aRequestedKeys[i].split('=');
+                    var sKey = this.getMockServer()._trim(aKeyVal[0]);
+                    //key doesn't match, continue to next entry
+                    if (jQuery.inArray(sKey, aKeys) === -1) {
+                        return true; // = continue
+                    }
+
+                    var sNewValue = this.getMockServer()._trim(aKeyVal[1]);
+                    var sOrigiValue = oEntry[sKey];
+
+                    switch (oEntitySet.keysType[sKey]) {
+                        case "Edm.String":
+                            sNewValue = sNewValue.replace(/^\'|\'$/g, '');
+                            break;
+                        case "Edm.Time":
+                        case "Edm.DateTime":
+                            sOrigiValue = this.getMockServer()._getDateTime(sOrigiValue);
+                            break;
+                        case "Edm.Int16":
+                        case "Edm.Int32":
+                        //case "Edm.Int64": In ODataModel this type is represented as a string. (https://openui5.hana.ondemand.com/docs/api/symbols/sap.ui.model.odata.type.Int64.html)
+                        case "Edm.Decimal":
+                        case "Edm.Byte":
+                        case "Edm.Double":
+                        case "Edm.Single":
+                        case "Edm.SByte":
+                            if (!this.getMockServer()._isValidNumber(sNewValue)) {
+                                //TODO check better handling
+                                return false; // = break
+                            }
+                            sNewValue = parseFloat(sNewValue);
+                            break;
+                        case "Edm.Guid":
+                            sNewValue = sNewValue.replace(/^guid\'|\'$/g, '');
+                            break;
+                        case "Edm.Boolean":
+                            if (["true", "false"].indexOf(sNewValue) === -1) {
+                                this.getMockServer()._logAndThrowMockServerCustomError(400, this.getMockServer()._oErrorMessages.INVALID_KEY_TYPE, sKey);
+                            }
+                            sNewValue = sNewValue === "true";
+                            break;
+                        case "Edm.Binary":
+                        case "Edm.DateTimeOffset":
+                        default:
+                            sNewValue = sNewValue;
+                    }
+
+                    //value doesn't match, continue to next entry
+                    if (sOrigiValue !== sNewValue) {
+                        return true; // = continue
+                    }
+                }
+                oFoundEntry = {
+                    index: iIndex,
+                    entry: oEntry
+                };
+                return false; // = break
+            }.bind(this));
+            return oFoundEntry;
+        },
+
+        _createObject: function (sEntity, oData) {
+            var oEntity = this._oMockServer._mEntityTypes[sEntity];
+            if (!oEntity) {
+                return {};
+            }
+
+            var oRetData = {};
+            $.each(oEntity.properties, function (sIndex, oProperty) {
+                if (typeof oData[oProperty.name] !== "undefined") {
+                    oRetData[oProperty.name] = oData[oProperty.name];
+                    return true;
+                }
+
+                var sValue = "";
+                switch (oProperty.type) {
+                    case "String":
+                        sValue = "";
+                        break;
+                    case "boolean":
+                        sValue = false;
+                        break;
+                    default:
+                        sValue = "";
+                        break;
+                }
+                oRetData[oProperty.name] = sValue;
+                return true;
+            }.bind(this));
+            return oRetData;
+        },
+
+        stop: function () {
+            this._detachEvents();
+        }
+    });
+
+    /**
+     * returns the mockserver of the app, should be used in integration tests
+     * @public 
+     * @returns {sap.ui.core.util.MockServer} the mockserver instance
+     */
+    $$TEMPLATE_INCLUDE_MOCKSERVER_BASIS_DOT$$.prototype.getMockServer = function () {
+        return this._oMockServer;
+    };
+
+
+    /**
+     * Initializes the mock server. Afterwards all requests going to the module path are mocked
+     * @public
+     */
+    $$TEMPLATE_INCLUDE_MOCKSERVER_BASIS_DOT$$.prototype.init = function () {
+        var oUriParameters = jQuery.sap.getUriParameters(),
+            sJsonFilesUrl = jQuery.sap.getModulePath(this._sAppModulePath + this._sDataFolderName),
+            sManifestUrl = jQuery.sap.getModulePath(this._sAppModulePath + "manifest", ".json"),
+            sErrorParam = oUriParameters.get("errorType"),
+            iErrorCode = sErrorParam === "badRequest" ? 400 : 500,
+            oManifest = jQuery.sap.syncGetJSON(sManifestUrl).data,
+            oDataSource = oManifest["sap.app"].dataSources[this._sDataSourceName],
+            sMetadataUrl = jQuery.sap.getModulePath(this._sAppModulePath + oDataSource.settings.localUri.replace(".xml", ""), ".xml"),
+            sMockServerUrl = /.*\/$/.test(oDataSource.uri) ? oDataSource.uri : oDataSource.uri + "/";
+
+        this._oMockServer = new MockServer({
+            rootUri: sMockServerUrl
+        });
+
+        // configure mock server with a delay of 1s
+        MockServer.config({
+            autoRespond: true,
+            autoRespondAfter: this._iResponseTime
+        });
+
+        this._oMockServer.simulate(sMetadataUrl, {
+            sMockdataBaseUrl: sJsonFilesUrl,
+            bGenerateMissingMockData: false,
+            aEntitySetsNames: this._aEntityRequired.length === 0 ? undefined : this._aEntityRequired
+        });
+
+        this._extendRequests();
+        this._attachEvents();
+
+        var aRequests = this._oMockServer.getRequests(),
+            fnResponse = function (iErrCode, sMessage, aRequest) {
+                aRequest.response = function (oXhr) {
+                    oXhr.respond(iErrCode, { "Content-Type": "text/plain;charset=utf-8" }, sMessage);
+                };
+            };
+
+        // handling the metadata error test
+        if (oUriParameters.get("metadataError")) {
+            aRequests.forEach(function (aEntry) {
+                if (aEntry.path.toString().indexOf("$metadata") > -1) {
+                    fnResponse(500, "metadata Error", aEntry);
+                }
+            });
+        }
+
+        // Handling request errors
+        if (sErrorParam) {
+            aRequests.forEach(function (aEntry) {
+                if (aEntry.path.toString().indexOf(sEntity) > -1) {
+                    fnResponse(iErrorCode, sErrorParam, aEntry);
+                }
+            });
+        }
+    };
+
+    //@private
+    $$TEMPLATE_INCLUDE_MOCKSERVER_BASIS_DOT$$.prototype._ToNumC = function (a, b, e) {
+        var i = a.toString(10);
+        while (i.length < b) {
+            if (e) {
+                i += "0";
+            } else {
+                i = "0" + i;
+            }
+        }
+        return i;
+    };
+
+    /**
+     * Abstract method, which can be overwritten by sub-classes.
+     * Allows to extend / reduce the amount of monitored requests
+     * @public
+     */
+    $$TEMPLATE_INCLUDE_MOCKSERVER_BASIS_DOT$$.prototype._extendRequests = function () {
+
+    };
+
+    MockServerDefinition.reset = function () {
+        iCurrentNumberRange = 1000;
+        $.each(MockServerDefinition.oActiveMockServer, function (sIndex, oMock) {
+            oMock.stop();
+        });
+        MockServerDefinition.oActiveMockServer = {};
+    };
+    MockServerDefinition.initAll = function () {
+        $.each(MockServerDefinition.oActiveMockServer, function (sIndex, oMock) {
+            oMock.init();
+        });
+    };
+
+    MockServerDefinition.get = function (sName) {
+        return MockServerDefinition.oActiveMockServer[sName];
+    }
+
+    MockServerDefinition.oActiveMockServer = {};
+
+    return MockServerDefinition;
+}
+);

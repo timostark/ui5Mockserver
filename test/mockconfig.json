@@ -1,0 +1,1134 @@
+{
+   "global": {
+      "serverPath": "https://services.odata.org/",
+      "outDir": "webapp/localService/",
+      "maxRequestLength": 100,
+      "globalFilter": {},
+      "manifest": "webapp/manifest.json"
+   },
+   "service": {
+      "mainService": {
+         "entitySet": {
+            "Categories": {
+               "exclude": false,
+               "filter": "",
+               "expand": "",
+               "generate": true,
+               "attributes": {
+                  "CategoryID": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "CategoryName": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Description": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Picture": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  }
+               }
+            },
+            "CustomerDemographics": {
+               "exclude": false,
+               "filter": "",
+               "expand": "",
+               "generate": false,
+               "attributes": {
+                  "CustomerTypeID": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "CustomerDesc": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  }
+               }
+            },
+            "Customers": {
+               "exclude": false,
+               "filter": "",
+               "expand": "",
+               "generate": false,
+               "attributes": {
+                  "CustomerID": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "CompanyName": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ContactName": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ContactTitle": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Address": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "City": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Region": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "PostalCode": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Country": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Phone": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Fax": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  }
+               }
+            },
+            "Employees": {
+               "exclude": false,
+               "filter": "",
+               "expand": "",
+               "generate": false,
+               "attributes": {
+                  "EmployeeID": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "LastName": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "FirstName": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Title": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "TitleOfCourtesy": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "BirthDate": {
+                     "fakerSettings": "date.past",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "HireDate": {
+                     "fakerSettings": "date.past",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Address": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "City": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Region": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "PostalCode": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Country": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "HomePhone": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Extension": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Photo": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Notes": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ReportsTo": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "PhotoPath": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  }
+               }
+            },
+            "Order_Details": {
+               "exclude": false,
+               "filter": "",
+               "expand": "",
+               "generate": false,
+               "attributes": {
+                  "OrderID": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ProductID": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "UnitPrice": {
+                     "fakerSettings": "random.float",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Quantity": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Discount": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  }
+               }
+            },
+            "Orders": {
+               "exclude": false,
+               "filter": "",
+               "expand": "",
+               "generate": false,
+               "attributes": {
+                  "OrderID": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "CustomerID": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "EmployeeID": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "OrderDate": {
+                     "fakerSettings": "date.past",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "RequiredDate": {
+                     "fakerSettings": "date.past",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ShippedDate": {
+                     "fakerSettings": "date.past",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ShipVia": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Freight": {
+                     "fakerSettings": "random.float",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ShipName": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ShipAddress": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ShipCity": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ShipRegion": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ShipPostalCode": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ShipCountry": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  }
+               }
+            },
+            "Products": {
+               "exclude": false,
+               "filter": "",
+               "expand": "",
+               "generate": false,
+               "attributes": {
+                  "ProductID": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ProductName": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "SupplierID": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "CategoryID": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "QuantityPerUnit": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "UnitPrice": {
+                     "fakerSettings": "random.float",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "UnitsInStock": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "UnitsOnOrder": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ReorderLevel": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Discontinued": {
+                     "fakerSettings": "random.boolean",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  }
+               }
+            },
+            "Regions": {
+               "exclude": false,
+               "filter": "",
+               "expand": "",
+               "generate": false,
+               "attributes": {
+                  "RegionID": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "RegionDescription": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  }
+               }
+            },
+            "Shippers": {
+               "exclude": false,
+               "filter": "",
+               "expand": "",
+               "generate": false,
+               "attributes": {
+                  "ShipperID": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "CompanyName": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Phone": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  }
+               }
+            },
+            "Suppliers": {
+               "exclude": false,
+               "filter": "",
+               "expand": "",
+               "generate": false,
+               "attributes": {
+                  "SupplierID": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "CompanyName": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ContactName": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ContactTitle": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Address": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "City": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Region": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "PostalCode": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Country": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Phone": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Fax": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "HomePage": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  }
+               }
+            },
+            "Territories": {
+               "exclude": false,
+               "filter": "",
+               "expand": "",
+               "generate": false,
+               "attributes": {
+                  "TerritoryID": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "TerritoryDescription": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "RegionID": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  }
+               }
+            },
+            "Alphabetical_list_of_products": {
+               "exclude": false,
+               "filter": "",
+               "expand": "",
+               "generate": false,
+               "attributes": {
+                  "ProductID": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ProductName": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "SupplierID": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "CategoryID": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "QuantityPerUnit": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "UnitPrice": {
+                     "fakerSettings": "random.float",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "UnitsInStock": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "UnitsOnOrder": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ReorderLevel": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Discontinued": {
+                     "fakerSettings": "random.boolean",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "CategoryName": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  }
+               }
+            },
+            "Category_Sales_for_1997": {
+               "exclude": false,
+               "filter": "",
+               "expand": "",
+               "generate": false,
+               "attributes": {
+                  "CategoryName": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "CategorySales": {
+                     "fakerSettings": "random.float",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  }
+               }
+            },
+            "Current_Product_Lists": {
+               "exclude": false,
+               "filter": "",
+               "expand": "",
+               "generate": false,
+               "attributes": {
+                  "ProductID": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ProductName": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  }
+               }
+            },
+            "Customer_and_Suppliers_by_Cities": {
+               "exclude": false,
+               "filter": "",
+               "expand": "",
+               "generate": false,
+               "attributes": {
+                  "City": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "CompanyName": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ContactName": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Relationship": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  }
+               }
+            },
+            "Invoices": {
+               "exclude": false,
+               "filter": "",
+               "expand": "",
+               "generate": false,
+               "attributes": {
+                  "ShipName": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ShipAddress": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ShipCity": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ShipRegion": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ShipPostalCode": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ShipCountry": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "CustomerID": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "CustomerName": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Address": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "City": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Region": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "PostalCode": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Country": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Salesperson": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "OrderID": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "OrderDate": {
+                     "fakerSettings": "date.past",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "RequiredDate": {
+                     "fakerSettings": "date.past",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ShippedDate": {
+                     "fakerSettings": "date.past",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ShipperName": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ProductID": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ProductName": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "UnitPrice": {
+                     "fakerSettings": "random.float",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Quantity": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Discount": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ExtendedPrice": {
+                     "fakerSettings": "random.float",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Freight": {
+                     "fakerSettings": "random.float",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  }
+               }
+            },
+            "Order_Details_Extendeds": {
+               "exclude": false,
+               "filter": "",
+               "expand": "",
+               "generate": false,
+               "attributes": {
+                  "OrderID": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ProductID": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ProductName": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "UnitPrice": {
+                     "fakerSettings": "random.float",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Quantity": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Discount": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ExtendedPrice": {
+                     "fakerSettings": "random.float",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  }
+               }
+            },
+            "Order_Subtotals": {
+               "exclude": false,
+               "filter": "",
+               "expand": "",
+               "generate": false,
+               "attributes": {
+                  "OrderID": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Subtotal": {
+                     "fakerSettings": "random.float",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  }
+               }
+            },
+            "Orders_Qries": {
+               "exclude": false,
+               "filter": "",
+               "expand": "",
+               "generate": false,
+               "attributes": {
+                  "OrderID": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "CustomerID": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "EmployeeID": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "OrderDate": {
+                     "fakerSettings": "date.past",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "RequiredDate": {
+                     "fakerSettings": "date.past",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ShippedDate": {
+                     "fakerSettings": "date.past",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ShipVia": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Freight": {
+                     "fakerSettings": "random.float",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ShipName": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ShipAddress": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ShipCity": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ShipRegion": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ShipPostalCode": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ShipCountry": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "CompanyName": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Address": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "City": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Region": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "PostalCode": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Country": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  }
+               }
+            },
+            "Product_Sales_for_1997": {
+               "exclude": false,
+               "filter": "",
+               "expand": "",
+               "generate": false,
+               "attributes": {
+                  "CategoryName": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ProductName": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ProductSales": {
+                     "fakerSettings": "random.float",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  }
+               }
+            },
+            "Products_Above_Average_Prices": {
+               "exclude": false,
+               "filter": "",
+               "expand": "",
+               "generate": false,
+               "attributes": {
+                  "ProductName": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "UnitPrice": {
+                     "fakerSettings": "random.float",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  }
+               }
+            },
+            "Products_by_Categories": {
+               "exclude": false,
+               "filter": "",
+               "expand": "",
+               "generate": false,
+               "attributes": {
+                  "CategoryName": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ProductName": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "QuantityPerUnit": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "UnitsInStock": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Discontinued": {
+                     "fakerSettings": "random.boolean",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  }
+               }
+            },
+            "Sales_by_Categories": {
+               "exclude": false,
+               "filter": "",
+               "expand": "",
+               "generate": false,
+               "attributes": {
+                  "CategoryID": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "CategoryName": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ProductName": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ProductSales": {
+                     "fakerSettings": "random.float",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  }
+               }
+            },
+            "Sales_Totals_by_Amounts": {
+               "exclude": false,
+               "filter": "",
+               "expand": "",
+               "generate": false,
+               "attributes": {
+                  "SaleAmount": {
+                     "fakerSettings": "random.float",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "OrderID": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "CompanyName": {
+                     "fakerSettings": "random.word",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "ShippedDate": {
+                     "fakerSettings": "date.past",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  }
+               }
+            },
+            "Summary_of_Sales_by_Quarters": {
+               "exclude": false,
+               "filter": "",
+               "expand": "",
+               "generate": false,
+               "attributes": {
+                  "ShippedDate": {
+                     "fakerSettings": "date.past",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "OrderID": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Subtotal": {
+                     "fakerSettings": "random.float",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  }
+               }
+            },
+            "Summary_of_Sales_by_Years": {
+               "exclude": false,
+               "filter": "",
+               "expand": "",
+               "generate": false,
+               "attributes": {
+                  "ShippedDate": {
+                     "fakerSettings": "date.past",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "OrderID": {
+                     "fakerSettings": "random.number",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  },
+                  "Subtotal": {
+                     "fakerSettings": "random.float",
+                     "isNumberGenerator": false,
+                     "isNumC": false
+                  }
+               }
+            }
+         },
+         "respectAddressable": true
+      }
+   }
+}
